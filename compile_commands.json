@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/Users/gweithio/git/cactus/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc  -I/Users/gweithio/.conan/data/log.c/cci.20200620/_/_/package/4af9740125bc0e58cffbfe1736fa625b66eedac7/include -I/Users/gweithio/.conan/data/sqlite3/3.39.2/_/_/package/85cf214cf086aeafb4e7a5c9d42358665d9b31c5/include -I/Users/gweithio/git/cactus/include -I/Users/gweithio/git/cactus/include/cactus -g  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu99 -o CMakeFiles/cactus_lib.dir/src/cactus.c.o -c /Users/gweithio/git/cactus/src/cactus.c",
+  "file": "/Users/gweithio/git/cactus/src/cactus.c"
+},
+{
+  "directory": "/Users/gweithio/git/cactus/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc  -I/Users/gweithio/.conan/data/log.c/cci.20200620/_/_/package/4af9740125bc0e58cffbfe1736fa625b66eedac7/include -I/Users/gweithio/.conan/data/sqlite3/3.39.2/_/_/package/85cf214cf086aeafb4e7a5c9d42358665d9b31c5/include -I/Users/gweithio/git/cactus/include -I/Users/gweithio/git/cactus/include/cactus -g  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu99 -o CMakeFiles/cactus_lib.dir/src/main.c.o -c /Users/gweithio/git/cactus/src/main.c",
+  "file": "/Users/gweithio/git/cactus/src/main.c"
+},
+{
+  "directory": "/Users/gweithio/git/cactus/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc  -I/Users/gweithio/.conan/data/log.c/cci.20200620/_/_/package/4af9740125bc0e58cffbfe1736fa625b66eedac7/include -I/Users/gweithio/.conan/data/sqlite3/3.39.2/_/_/package/85cf214cf086aeafb4e7a5c9d42358665d9b31c5/include -I/Users/gweithio/git/cactus/include -I/Users/gweithio/git/cactus/include/cactus -g  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu99 -o CMakeFiles/cactus.dir/src/cactus.c.o -c /Users/gweithio/git/cactus/src/cactus.c",
+  "file": "/Users/gweithio/git/cactus/src/cactus.c"
+},
+{
+  "directory": "/Users/gweithio/git/cactus/build",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/cc  -I/Users/gweithio/.conan/data/log.c/cci.20200620/_/_/package/4af9740125bc0e58cffbfe1736fa625b66eedac7/include -I/Users/gweithio/.conan/data/sqlite3/3.39.2/_/_/package/85cf214cf086aeafb4e7a5c9d42358665d9b31c5/include -I/Users/gweithio/git/cactus/include -I/Users/gweithio/git/cactus/include/cactus -g  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -std=gnu99 -o CMakeFiles/cactus.dir/src/main.c.o -c /Users/gweithio/git/cactus/src/main.c",
+  "file": "/Users/gweithio/git/cactus/src/main.c"
+}
+]

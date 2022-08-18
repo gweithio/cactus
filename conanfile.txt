@@ -1,0 +1,6 @@
+[requires]
+log.c/cci.20200620
+sqlite3/3.39.2
+
+[generators]
+cmake
