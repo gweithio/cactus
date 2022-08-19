@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+compile_commands.json
+
+compile_flags.txt
+
 test.db
 
 # Vim files

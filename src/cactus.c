@@ -22,3 +22,22 @@ int note_delete(int id, sqlite3* db) {
 
   return sqlite3_exec(db, delete_string, NULL, NULL, NULL);
 }
+
+int note_get(int id, sqlite3* db) {
+  char get_string[256];
+  sprintf(get_string, "SELECT * FROM notes WHERE id = %d", id);
+  return sqlite3_exec(db, get_string, NULL, NULL, NULL);
+}
+
+int note_update(int id, char* text, sqlite3* db) {
+  char update_string[256];
+  sprintf(update_string, "UPDATE notes SET text = '%s' WHERE id = %d", text,
+          id);
+  return sqlite3_exec(db, update_string, NULL, NULL, NULL);
+}
+
+int note_get_all(sqlite3* db) {
+  char get_all_string[256];
+  sprintf(get_all_string, "SELECT * FROM notes");
+  return sqlite3_exec(db, get_all_string, NULL, NULL, NULL);
+}
