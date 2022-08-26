@@ -17,7 +17,49 @@ Cactus is a productivity tool written in C99 focused on portability.
 
 ```
 - Take Notes that are synced to a SQLite DB
-- More to come :)
+- Creating, updating, deleting and getting a single or all notes
+```
+
+### Usage
+
+**Creating a Note**
+
+`cactus new <text>`
+
+```bash
+$ cactus new "Hello, World!"
+```
+
+**Deleting a Note**
+
+`cactus delete <id>`
+
+```bash
+$ cactus delete 1
+```
+
+**Uodating a Note**
+
+`cactus delete <id> <new text>`
+
+```bash
+$ cactus update 23 "New Note Change"
+```
+
+**getting a Note**
+
+`cactus get <id>`
+
+```bash
+$ cactus get 10
+```
+
+**getting a all Notes**
+
+`cactus get-all`
+
+```bash
+$ cactus get-all
 ```
 
 ### Target Platforms (Currently)
