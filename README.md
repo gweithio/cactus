@@ -46,7 +46,7 @@ $ cactus delete 1
 $ cactus update 23 "New Note Change"
 ```
 
-**getting a Note**
+**Getting a Note**
 
 `cactus get <id>`
 
@@ -54,7 +54,7 @@ $ cactus update 23 "New Note Change"
 $ cactus get 10
 ```
 
-**getting a all Notes**
+**Getting all Notes**
 
 `cactus get-all`
 
