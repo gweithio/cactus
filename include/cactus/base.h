@@ -6,16 +6,20 @@
 
 #define ARRAY_SIZE(Array) (sizeof(Array) / sizeof(Array[0]))
 
-const char* current_time() {
-  time_t     rawtime;
-  struct tm* timeinfo;
-  char*      time_string = NULL;
-  time(&rawtime);
-  timeinfo = localtime(&rawtime);
+char* time_now() {
+  time_t     timer;
+  char       buffer[26];
+  struct tm* tm_info;
+  char*      final;
 
-  strftime(time_string, strlen(time_string), "%Y-%m-%d", timeinfo);
+  timer   = time(NULL);
+  tm_info = localtime(&timer);
 
-  return time_string;
+  strftime(buffer, 26, "%Y-%m-%d", tm_info);
+
+  memmove(final, buffer, strlen(buffer));
+
+  return final;
 }
 
 #endif

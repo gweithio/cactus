@@ -1,8 +1,16 @@
 #include <log.h>
 #include <sqlite3.h>
 #include <cactus/cactus.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+static int check_args(char* first, char* second) {
+  if (strcmp(first, second) == 0)
+    return 1;
+
+  return 0;
+}
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -13,23 +21,17 @@ int main(int argc, char** argv) {
   sqlite3* db;
 
   // DB SETUP
-  if (sqlite3_open_v2("test.db", &db,
-                      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
-                      NULL) != SQLITE_OK) {
+  if (sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, NULL) !=
+      SQLITE_OK) {
     log_error("Could not open database: %s", sqlite3_errmsg(db));
     return 1;
   }
 
-  if (sqlite3_exec(db, "DROP TABLE IF EXISTS notes", NULL, NULL, NULL) !=
-      SQLITE_OK) {
-    log_error("Could not drop table: %s", sqlite3_errmsg(db));
-    return 1;
-  }
-
   if (sqlite3_exec(db,
-                   "CREATE TABLE notes (id INTEGER PRIMARY KEY, "
-                   "text TEXT, "
-                   "created_at DATETIME)",
+                   "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY "
+                   "AUTOINCREMENT, "
+                   "text TEXT NOT NULL, "
+                   "created_at DATETIME NOT NULL)",
                    NULL, NULL, NULL) != SQLITE_OK) {
     log_error("Could not create table: %s", sqlite3_errmsg(db));
     return 1;
@@ -38,11 +40,12 @@ int main(int argc, char** argv) {
   // DB SETUP END
 
   // ACTIONS
+  //
 
-  if (strcmp(argv[1], "new") == 0) {
+  if (check_args(argv[1], "new")) {
     if (argc < 3) {
       printf("Usage: %s new 'Note Text!'\n", argv[0]);
-      return 1;
+      return 0;
     }
     if (note_insert(argv[2], db) != SQLITE_OK) {
       log_error("Could not insert row: %s", sqlite3_errmsg(db));
@@ -50,7 +53,7 @@ int main(int argc, char** argv) {
     } else {
       printf("Inserted row\n");
     }
-  } else if (strcmp(argv[1], "delete") == 0) {
+  } else if (check_args(argv[1], "delete")) {
     if (argc < 3) {
       printf("Usage: %s delete <id>\n", argv[0]);
       return 1;
@@ -61,7 +64,7 @@ int main(int argc, char** argv) {
     } else {
       printf("Deleted row %d\n", atoi(argv[2]));
     }
-  } else if (strcmp(argv[1], "get") == 0) {
+  } else if (check_args(argv[1], "get")) {
     if (argc < 3) {
       printf("Usage: %s get <id>\n", argv[0]);
       return 1;
@@ -72,7 +75,7 @@ int main(int argc, char** argv) {
     } else {
       printf("Got row %d\n", atoi(argv[2]));
     }
-  } else if (strcmp(argv[1], "update") == 0) {
+  } else if (check_args(argv[1], "update")) {
     if (argc < 4) {
       printf("Usage: %s update <id> 'Note Text!'\n", argv[0]);
       return 1;
@@ -83,7 +86,7 @@ int main(int argc, char** argv) {
     } else {
       printf("Updated row %d\n", atoi(argv[2]));
     }
-  } else if (strcmp(argv[1], "get-all") == 0) {
+  } else if (check_args(argv[1], "get-all")) {
     if (note_get_all(db) != SQLITE_OK) {
       log_error("Could not get all rows: %s", sqlite3_errmsg(db));
       return 1;
