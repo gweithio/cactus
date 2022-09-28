@@ -23,7 +23,7 @@ Cactus is a productivity tool written in C99 focused on portability.
 ### Requirements
 
 ```
-- CMake, for building
+- CMake, for building and Ninja instead of Makefiles :)
 - Conan, for deps
 - A C compiler, I use clang specifics in the Cmakefile
 ```
@@ -44,6 +44,12 @@ $ cactus new "Hello, World!"
 
 ```bash
 $ cactus delete 1
+```
+
+**Deleting All Notes**
+
+```bash
+$ cactus delete-all
 ```
 
 **Uodating a Note**
@@ -85,4 +91,3 @@ Will download the deps from Conan building the cmake structure and build the pro
 ```bash
 $ ./build.sh
 ```
-
