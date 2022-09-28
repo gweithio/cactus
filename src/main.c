@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+
+// TODO: need to reason what we're gonna use this for
+typedef enum { INSERT, GET, GETALL, DELETE, UPDATE } QUERY_TYPE;
 
 static int check_args(char* first, char* second) {
   if (strcmp(first, second) == 0)
@@ -12,16 +16,40 @@ static int check_args(char* first, char* second) {
   return 0;
 }
 
+static int create_empty_db(const char* name) {
+  struct stat buffer;
+  char        text_buffer[256];
+
+  // using stat, we can check if the file exists
+  if (stat(name, &buffer) == 0) {
+    return 0;
+  }
+
+  FILE* db_file = fopen(name, "w");
+
+  if (!db_file) {
+    fclose(db_file);
+    return 1;
+  }
+
+  fclose(db_file);
+  return 0;
+}
+
 int main(int argc, char** argv) {
+  sqlite3* db;
+
+  // I'M AN IDIOT!
+  create_empty_db("notes.db");
+
   if (argc < 2) {
     printf("Usage: %s new 'Note Text!'\n", argv[0]);
     return 1;
   }
 
-  sqlite3* db;
-
   // DB SETUP
-  if (sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, NULL) !=
+  // TODO: We probably want to create the DB if it does not exist?
+  if (sqlite3_open_v2("notes.db", &db, SQLITE_OPEN_READWRITE, NULL) !=
       SQLITE_OK) {
     log_error("Could not open database: %s", sqlite3_errmsg(db));
     return 1;
@@ -40,7 +68,8 @@ int main(int argc, char** argv) {
   // DB SETUP END
 
   // ACTIONS
-  //
+
+  // TODO: clean this heap of trash code, switch statement maybe? or a function?
 
   if (check_args(argv[1], "new")) {
     if (argc < 3) {
@@ -63,6 +92,13 @@ int main(int argc, char** argv) {
       return 1;
     } else {
       printf("Deleted row %d\n", atoi(argv[2]));
+    }
+  } else if (check_args(argv[1], "delete-all")) {
+    if (note_delete_all(db) != SQLITE_OK) {
+      log_error("Could not delete all notes\n");
+      return 1;
+    } else {
+      printf("Deleted All Notes\n");
     }
   } else if (check_args(argv[1], "get")) {
     if (argc < 3) {
