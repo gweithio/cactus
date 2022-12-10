@@ -50,4 +50,11 @@ uint8_t note_update(int id, char *text, sqlite3 *db);
  * @returns success (0) or failure (1) */
 uint8_t note_get_all(sqlite3 *db);
 
+/*
+ * refreshes the db instance by deleting the db
+ *
+ * @param db - the db instance were removing
+ * @returns success (0) or failure (1) */
+uint8_t note_refresh(sqlite3 *db);
+
 #endif

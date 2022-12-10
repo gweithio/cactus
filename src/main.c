@@ -88,7 +88,7 @@ main(int argc, char **argv)
       log_error("Could not insert row: %s", sqlite3_errmsg(db));
       return 1;
     } else {
-      printf("Inserted row\n");
+      log_info("Inserted row\n");
     }
   } else if (check_args(argv[1], "delete")) {
     if (argc < 3) {
@@ -99,14 +99,14 @@ main(int argc, char **argv)
       log_error("Could not delete row: %s", sqlite3_errmsg(db));
       return 1;
     } else {
-      printf("Deleted row %d\n", atoi(argv[2]));
+      log_info("Deleted row %d\n", atoi(argv[2]));
     }
   } else if (check_args(argv[1], "delete-all")) {
     if (note_delete_all(db) != SQLITE_OK) {
       log_error("Could not delete all notes\n");
       return 1;
     } else {
-      printf("Deleted All Notes\n");
+      log_info("Deleted All Notes\n");
     }
   } else if (check_args(argv[1], "get")) {
     if (argc < 3) {
@@ -117,7 +117,7 @@ main(int argc, char **argv)
       log_error("Could not get row: %s", sqlite3_errmsg(db));
       return 1;
     } else {
-      printf("Got row %d\n", atoi(argv[2]));
+      log_info("Got row %d\n", atoi(argv[2]));
     }
   } else if (check_args(argv[1], "update")) {
     if (argc < 4) {
@@ -128,14 +128,21 @@ main(int argc, char **argv)
       log_error("Could not update row: %s", sqlite3_errmsg(db));
       return 1;
     } else {
-      printf("Updated row %d\n", atoi(argv[2]));
+      log_info("Updated row %d\n", atoi(argv[2]));
     }
   } else if (check_args(argv[1], "get-all")) {
     if (note_get_all(db) != SQLITE_OK) {
       log_error("Could not get all rows: %s", sqlite3_errmsg(db));
       return 1;
     } else {
-      printf("Got all rows\n");
+      log_info("Got all rows\n");
+    }
+  } else if (check_args(argv[1], "refresh")) {
+    if (note_refresh(db) != SQLITE_OK) {
+      log_error("Failed to refresh database %s", sqlite3_errmsg(db));
+      return 1;
+    } else {
+      log_info("DB Refreshed");
     }
   } else {
     printf("Unknown action: %s\n", argv[1]);

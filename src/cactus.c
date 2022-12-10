@@ -9,8 +9,6 @@
 static int
 get_callback(void *data, int argc, char **argv, char **columnName)
 {
-  fprintf(stderr, "%s\n", (const char *)data);
-
   for (int i = 0; i < argc; i++) {
     printf("%s = %s\n", columnName[i], argv[i] ? argv[i] : "NULL");
   }
@@ -22,12 +20,14 @@ uint8_t
 note_insert(char *text, sqlite3 *db)
 {
   char *sql = "INSERT INTO notes (text, created_at) VALUES ('%s', '%s')";
-  const char *time = time_now();
+
+  // This bastard is causing the seg fault
+  char *time = time_now();
   char insert_string[256];
 
-  sprintf(insert_string, sql, text, time);
+  printf("Inserted Note @ %s\n", time);
 
-  printf("%s\n", insert_string);
+  sprintf(insert_string, sql, text, time);
 
   return sqlite3_exec(db, insert_string, NULL, NULL, NULL);
 }
@@ -55,12 +55,11 @@ uint8_t
 note_get(int id, sqlite3 *db)
 {
   char get_string[256];
-  const char *data = "Callback function called";
   char *errorMesg = 0;
   sprintf(get_string, "SELECT * FROM notes WHERE id = %d", id);
 
-  uint8_t rec = (uint8_t)sqlite3_exec(db, get_string, get_callback,
-                                      (void *)data, &errorMesg);
+  uint8_t rec
+      = (uint8_t)sqlite3_exec(db, get_string, get_callback, NULL, &errorMesg);
 
   if (rec != SQLITE_OK) {
     fprintf(stderr, "Error: %s\n", errorMesg);
@@ -83,13 +82,12 @@ uint8_t
 note_get_all(sqlite3 *db)
 {
   char get_all_string[256];
-  const char *data = "Callback function called";
   char *errorMesg = 0;
 
   sprintf(get_all_string, "SELECT * FROM notes");
 
-  uint8_t rc = sqlite3_exec(db, get_all_string, get_callback, (void *)data,
-                            &errorMesg);
+  uint8_t rc
+      = sqlite3_exec(db, get_all_string, get_callback, NULL, &errorMesg);
 
   if (rc != SQLITE_OK) {
     fprintf(stderr, "Failed to get all rows\n");
@@ -97,4 +95,10 @@ note_get_all(sqlite3 *db)
   }
 
   return rc;
+}
+
+uint8_t
+note_refresh(sqlite3 *db)
+{
+  return remove("notes.db");
 }
