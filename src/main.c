@@ -1,4 +1,5 @@
 #include <cactus/cactus.h>
+#include <cmd.h>
 #include <log.h>
 #include <sqlite3.h>
 #include <stdio.h>
@@ -6,14 +7,25 @@
 #include <string.h>
 #include <sys/stat.h>
 
-// TODO: need to reason what we're gonna use this for
-typedef enum { INSERT, GET, GETALL, DELETE, UPDATE } QUERY_TYPE;
-
-static int
-check_args(char *first, char *second)
+static enum command_types
+check_args(char *first)
 {
-  if (strcmp(first, second) == 0)
-    return 1;
+  if (strcmp(first, "new") == 0) {
+    return CREATE;
+  } else if (strcmp(first, "delete") == 0) {
+    return DELETE;
+  } else if (strcmp(first, "get") == 0) {
+    return GET;
+  } else if (strcmp(first, "get-all") == 0) {
+    return GET_ALL;
+  } else if (strcmp(first, "delete-all") == 0) {
+    return DELETE_ALL;
+  } else if (strcmp(first, "refresh") == 0) {
+    return REFRESH;
+
+  } else {
+    return NONE;
+  }
 
   return 0;
 }
@@ -40,27 +52,9 @@ create_empty_db(const char *name)
   return 0;
 }
 
-int
-main(int argc, char **argv)
+static void
+create_base_table(sqlite3 *db)
 {
-  sqlite3 *db;
-
-  // I'M AN IDIOT!
-  create_empty_db("notes.db");
-
-  if (argc < 2) {
-    printf("Usage: %s new 'Note Text!'\n", argv[0]);
-    return 1;
-  }
-
-  // DB SETUP
-  // TODO: We probably want to create the DB if it does not exist?
-  if (sqlite3_open_v2("notes.db", &db, SQLITE_OPEN_READWRITE, NULL)
-      != SQLITE_OK) {
-    log_error("Could not open database: %s", sqlite3_errmsg(db));
-    return 1;
-  }
-
   if (sqlite3_exec(db,
                    "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY "
                    "AUTOINCREMENT, "
@@ -69,92 +63,45 @@ main(int argc, char **argv)
                    NULL, NULL, NULL)
       != SQLITE_OK) {
     log_error("Could not create table: %s", sqlite3_errmsg(db));
+
+    exit(EXIT_FAILURE);
+  }
+}
+
+int
+main(int argc, char **argv)
+{
+  sqlite3 *db;
+  int result;
+
+  if (create_empty_db("notes.db")) {
+    log_error("Failed to create empty db");
     return 1;
   }
 
-  // DB SETUP END
-
-  // ACTIONS
-
-  // TODO: clean this heap of trash code, switch statement maybe? or a
-  // function?
-
-  if (check_args(argv[1], "new")) {
-    if (argc < 3) {
-      printf("Usage: %s new 'Note Text!'\n", argv[0]);
-      return 0;
-    }
-    if (note_insert(argv[2], db) != SQLITE_OK) {
-      log_error("Could not insert row: %s", sqlite3_errmsg(db));
-      return 1;
-    } else {
-      log_info("Inserted row\n");
-    }
-  } else if (check_args(argv[1], "delete")) {
-    if (argc < 3) {
-      printf("Usage: %s delete <id>\n", argv[0]);
-      return 1;
-    }
-    if (note_delete(atoi(argv[2]), db) != SQLITE_OK) {
-      log_error("Could not delete row: %s", sqlite3_errmsg(db));
-      return 1;
-    } else {
-      log_info("Deleted row %d\n", atoi(argv[2]));
-    }
-  } else if (check_args(argv[1], "delete-all")) {
-    if (note_delete_all(db) != SQLITE_OK) {
-      log_error("Could not delete all notes\n");
-      return 1;
-    } else {
-      log_info("Deleted All Notes\n");
-    }
-  } else if (check_args(argv[1], "get")) {
-    if (argc < 3) {
-      printf("Usage: %s get <id>\n", argv[0]);
-      return 1;
-    }
-    if (note_get(atoi(argv[2]), db) != SQLITE_OK) {
-      log_error("Could not get row: %s", sqlite3_errmsg(db));
-      return 1;
-    } else {
-      log_info("Got row %d\n", atoi(argv[2]));
-    }
-  } else if (check_args(argv[1], "update")) {
-    if (argc < 4) {
-      printf("Usage: %s update <id> 'Note Text!'\n", argv[0]);
-      return 1;
-    }
-    if (note_update(atoi(argv[2]), argv[3], db) != SQLITE_OK) {
-      log_error("Could not update row: %s", sqlite3_errmsg(db));
-      return 1;
-    } else {
-      log_info("Updated row %d\n", atoi(argv[2]));
-    }
-  } else if (check_args(argv[1], "get-all")) {
-    if (note_get_all(db) != SQLITE_OK) {
-      log_error("Could not get all rows: %s", sqlite3_errmsg(db));
-      return 1;
-    } else {
-      log_info("Got all rows\n");
-    }
-  } else if (check_args(argv[1], "refresh")) {
-    if (note_refresh(db) != SQLITE_OK) {
-      log_error("Failed to refresh database %s", sqlite3_errmsg(db));
-      return 1;
-    } else {
-      log_info("DB Refreshed");
-    }
-  } else {
-    printf("Unknown action: %s\n", argv[1]);
+  if (argc < 2) {
+    printf("Usage: %s new 'Note Text!'\n", argv[0]);
     return 1;
   }
 
-  // ACTIONS END
+  // DB SETUP
+  if (sqlite3_open_v2("notes.db", &db, SQLITE_OPEN_READWRITE, NULL)
+      != SQLITE_OK) {
+    log_error("Could not open database: %s", sqlite3_errmsg(db));
+    return 1;
+  }
+
+  create_base_table(db);
 
   if (sqlite3_close(db) != SQLITE_OK) {
     log_error("Could not close database: %s", sqlite3_errmsg(db));
     return 1;
   }
 
-  return 0;
+  if (!run_cmd(db, check_args(argv[1]), argv[2])) {
+    log_error("Failed to run command");
+    return 0;
+  } else {
+    return 1;
+  }
 }

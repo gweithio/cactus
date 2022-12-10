@@ -25,8 +25,6 @@ note_insert(char *text, sqlite3 *db)
   char *time = time_now();
   char insert_string[256];
 
-  printf("Inserted Note @ %s\n", time);
-
   sprintf(insert_string, sql, text, time);
 
   return sqlite3_exec(db, insert_string, NULL, NULL, NULL);
