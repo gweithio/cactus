@@ -76,6 +76,13 @@ $ cactus get 10
 $ cactus get-all
 ```
 
+**Refreshing the db**
+Note: this will delete the notes.db file, when a new note is created the db will also be created
+
+```bash
+$ cactus refresh
+```
+
 ### Target Platforms (Currently)
 
 ```
