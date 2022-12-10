@@ -1,31 +1,35 @@
+#include <cactus/cactus.h>
 #include <log.h>
 #include <sqlite3.h>
-#include <cactus/cactus.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 
 // TODO: need to reason what we're gonna use this for
 typedef enum { INSERT, GET, GETALL, DELETE, UPDATE } QUERY_TYPE;
 
-static int check_args(char* first, char* second) {
+static int
+check_args(char *first, char *second)
+{
   if (strcmp(first, second) == 0)
     return 1;
 
   return 0;
 }
 
-static int create_empty_db(const char* name) {
+static int
+create_empty_db(const char *name)
+{
   struct stat buffer;
-  char        text_buffer[256];
+  char text_buffer[256];
 
   // using stat, we can check if the file exists
   if (stat(name, &buffer) == 0) {
     return 0;
   }
 
-  FILE* db_file = fopen(name, "w");
+  FILE *db_file = fopen(name, "w");
 
   if (!db_file) {
     fclose(db_file);
@@ -36,8 +40,10 @@ static int create_empty_db(const char* name) {
   return 0;
 }
 
-int main(int argc, char** argv) {
-  sqlite3* db;
+int
+main(int argc, char **argv)
+{
+  sqlite3 *db;
 
   // I'M AN IDIOT!
   create_empty_db("notes.db");
@@ -49,8 +55,8 @@ int main(int argc, char** argv) {
 
   // DB SETUP
   // TODO: We probably want to create the DB if it does not exist?
-  if (sqlite3_open_v2("notes.db", &db, SQLITE_OPEN_READWRITE, NULL) !=
-      SQLITE_OK) {
+  if (sqlite3_open_v2("notes.db", &db, SQLITE_OPEN_READWRITE, NULL)
+      != SQLITE_OK) {
     log_error("Could not open database: %s", sqlite3_errmsg(db));
     return 1;
   }
@@ -60,7 +66,8 @@ int main(int argc, char** argv) {
                    "AUTOINCREMENT, "
                    "text TEXT NOT NULL, "
                    "created_at DATETIME NOT NULL)",
-                   NULL, NULL, NULL) != SQLITE_OK) {
+                   NULL, NULL, NULL)
+      != SQLITE_OK) {
     log_error("Could not create table: %s", sqlite3_errmsg(db));
     return 1;
   }
@@ -69,7 +76,8 @@ int main(int argc, char** argv) {
 
   // ACTIONS
 
-  // TODO: clean this heap of trash code, switch statement maybe? or a function?
+  // TODO: clean this heap of trash code, switch statement maybe? or a
+  // function?
 
   if (check_args(argv[1], "new")) {
     if (argc < 3) {

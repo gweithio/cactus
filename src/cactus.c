@@ -1,13 +1,15 @@
-#include <log.h>
-#include <cactus/cactus.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
 #include <cactus/base.h>
+#include <cactus/cactus.h>
+#include <log.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-static int get_callback(void* data, int argc, char** argv, char** columnName) {
-  fprintf(stderr, "%s\n", (const char*)data);
+static int
+get_callback(void *data, int argc, char **argv, char **columnName)
+{
+  fprintf(stderr, "%s\n", (const char *)data);
 
   for (int i = 0; i < argc; i++) {
     printf("%s = %s\n", columnName[i], argv[i] ? argv[i] : "NULL");
@@ -16,10 +18,12 @@ static int get_callback(void* data, int argc, char** argv, char** columnName) {
   return 0;
 }
 
-uint8_t note_insert(char* text, sqlite3* db) {
-  char*       sql  = "INSERT INTO notes (text, created_at) VALUES ('%s', '%s')";
-  const char* time = time_now();
-  char        insert_string[256];
+uint8_t
+note_insert(char *text, sqlite3 *db)
+{
+  char *sql = "INSERT INTO notes (text, created_at) VALUES ('%s', '%s')";
+  const char *time = time_now();
+  char insert_string[256];
 
   sprintf(insert_string, sql, text, time);
 
@@ -28,14 +32,18 @@ uint8_t note_insert(char* text, sqlite3* db) {
   return sqlite3_exec(db, insert_string, NULL, NULL, NULL);
 }
 
-uint8_t note_delete(int id, sqlite3* db) {
+uint8_t
+note_delete(int id, sqlite3 *db)
+{
   char delete_string[256];
   sprintf(delete_string, "DELETE FROM notes WHERE id = %d", id);
 
   return sqlite3_exec(db, delete_string, NULL, NULL, NULL);
 }
 
-uint8_t note_delete_all(sqlite3* db) {
+uint8_t
+note_delete_all(sqlite3 *db)
+{
   char delete_all_string[256];
 
   sprintf(delete_all_string, "DELETE FROM notes");
@@ -43,14 +51,16 @@ uint8_t note_delete_all(sqlite3* db) {
   return sqlite3_exec(db, delete_all_string, NULL, NULL, NULL);
 }
 
-uint8_t note_get(int id, sqlite3* db) {
-  char        get_string[256];
-  const char* data      = "Callback function called";
-  char*       errorMesg = 0;
+uint8_t
+note_get(int id, sqlite3 *db)
+{
+  char get_string[256];
+  const char *data = "Callback function called";
+  char *errorMesg = 0;
   sprintf(get_string, "SELECT * FROM notes WHERE id = %d", id);
 
-  uint8_t rec = (uint8_t)sqlite3_exec(db, get_string, get_callback, (void*)data,
-                                      &errorMesg);
+  uint8_t rec = (uint8_t)sqlite3_exec(db, get_string, get_callback,
+                                      (void *)data, &errorMesg);
 
   if (rec != SQLITE_OK) {
     fprintf(stderr, "Error: %s\n", errorMesg);
@@ -60,22 +70,26 @@ uint8_t note_get(int id, sqlite3* db) {
   return rec;
 }
 
-uint8_t note_update(int id, char* text, sqlite3* db) {
+uint8_t
+note_update(int id, char *text, sqlite3 *db)
+{
   char update_string[256];
   sprintf(update_string, "UPDATE notes SET text = '%s' WHERE id = %d", text,
           id);
   return sqlite3_exec(db, update_string, NULL, NULL, NULL);
 }
 
-uint8_t note_get_all(sqlite3* db) {
-  char        get_all_string[256];
-  const char* data      = "Callback function called";
-  char*       errorMesg = 0;
+uint8_t
+note_get_all(sqlite3 *db)
+{
+  char get_all_string[256];
+  const char *data = "Callback function called";
+  char *errorMesg = 0;
 
   sprintf(get_all_string, "SELECT * FROM notes");
 
-  uint8_t rc =
-      sqlite3_exec(db, get_all_string, get_callback, (void*)data, &errorMesg);
+  uint8_t rc = sqlite3_exec(db, get_all_string, get_callback, (void *)data,
+                            &errorMesg);
 
   if (rc != SQLITE_OK) {
     fprintf(stderr, "Failed to get all rows\n");
