@@ -40,18 +40,18 @@ create_empty_db(const char *name)
 
   // using stat, we can check if the file exists
   if (stat(name, &buffer) == 0) {
-    return 0;
+    return 1;
   }
 
   FILE *db_file = fopen(name, "w");
 
   if (!db_file) {
     fclose(db_file);
-    return 1;
+    return 0;
   }
 
   fclose(db_file);
-  return 0;
+  return 1;
 }
 
 static void
@@ -60,8 +60,8 @@ create_base_table(sqlite3 *db)
   if (sqlite3_exec(db,
                    "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY "
                    "AUTOINCREMENT, "
-                   "text TEXT NOT NULL, "
-                   "created_at DATETIME NOT NULL)",
+                   "note_text TEXT NOT NULL, "
+                   "note_created_at DATETIME NOT NULL)",
                    NULL, NULL, NULL)
       != SQLITE_OK) {
     log_error("Could not create table: %s", sqlite3_errmsg(db));
@@ -74,15 +74,14 @@ int
 main(int argc, char **argv)
 {
   sqlite3 *db;
-  int result;
-
-  if (create_empty_db("notes.db")) {
-    log_error("Failed to create empty db");
-    return 1;
-  }
 
   if (argc < 2) {
     printf("Usage: %s new 'Note Text!'\n", argv[0]);
+    return 1;
+  }
+
+  if (!create_empty_db("notes.db")) {
+    log_error("Failed to create empty db");
     return 1;
   }
 
@@ -90,14 +89,14 @@ main(int argc, char **argv)
   if (sqlite3_open_v2("notes.db", &db, SQLITE_OPEN_READWRITE, NULL)
       != SQLITE_OK) {
     log_error("Could not open database: %s", sqlite3_errmsg(db));
-    return 1;
+    return 0;
   }
 
   create_base_table(db);
 
   if (sqlite3_close(db) != SQLITE_OK) {
     log_error("Could not close database: %s", sqlite3_errmsg(db));
-    return 1;
+    return 0;
   }
 
   if (run_cmd(db, check_args(argv[1]), argv[2]) != SQLITE_OK) {

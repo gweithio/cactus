@@ -1,6 +1,7 @@
 #include <cactus/cactus.h>
 #include <core/utils.h>
 
+#include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,17 +20,16 @@ get_callback(void *data, int argc, char **argv, char **columnName)
 uint8_t
 note_insert(char *text, sqlite3 *db)
 {
-  char *sql = "INSERT INTO notes (text, created_at) VALUES ('%s', '%s')";
+  char *sql
+      = "INSERT INTO notes (note_text, note_created_at) VALUES ('%s', '%s')";
 
-  char *time = time_now();
+  const char *time = time_now();
   char insert_string[256];
   printf("Noted (%s) created @ %s\n", text, time);
 
   sprintf(insert_string, sql, text, time);
 
-  printf("%s\n", insert_string);
-
-  free(time);
+  printf("SQL: %s\n", insert_string);
 
   return sqlite3_exec(db, insert_string, NULL, NULL, NULL);
 }
