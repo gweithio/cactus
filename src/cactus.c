@@ -1,14 +1,14 @@
-#include <cactus/base.h>
 #include <cactus/cactus.h>
-#include <log.h>
+#include <core/utils.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 static int
 get_callback(void *data, int argc, char **argv, char **columnName)
 {
+  (void)data;
   for (int i = 0; i < argc; i++) {
     printf("%s = %s\n", columnName[i], argv[i] ? argv[i] : "NULL");
   }
@@ -21,11 +21,15 @@ note_insert(char *text, sqlite3 *db)
 {
   char *sql = "INSERT INTO notes (text, created_at) VALUES ('%s', '%s')";
 
-  // This bastard is causing the seg fault
   char *time = time_now();
   char insert_string[256];
+  printf("Noted (%s) created @ %s\n", text, time);
 
   sprintf(insert_string, sql, text, time);
+
+  printf("%s\n", insert_string);
+
+  free(time);
 
   return sqlite3_exec(db, insert_string, NULL, NULL, NULL);
 }

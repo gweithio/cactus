@@ -1,6 +1,8 @@
 #include <cactus/cactus.h>
-#include <cmd.h>
+#include <core/cmd.h>
+
 #include <log.h>
+
 #include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -98,8 +100,8 @@ main(int argc, char **argv)
     return 1;
   }
 
-  if (!run_cmd(db, check_args(argv[1]), argv[2])) {
-    log_error("Failed to run command");
+  if (run_cmd(db, check_args(argv[1]), argv[2]) != SQLITE_OK) {
+    log_error("Failed to run command: %s", sqlite3_errmsg(db));
     return 0;
   } else {
     return 1;

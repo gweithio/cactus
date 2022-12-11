@@ -1,7 +1,6 @@
-#include <cactus.h>
 #include <cactus/cactus.h>
-#include <cmd.h>
-#include <stdio.h>
+#include <core/cmd.h>
+
 #include <stdlib.h>
 
 int

@@ -1,6 +1,8 @@
 #ifndef CACTUS_HEADER
 #define CACTUS_HEADER
+
 #include <sqlite3.h>
+
 #include <stdint.h>
 
 /*
