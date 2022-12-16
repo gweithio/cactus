@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int run_cmd(sqlite3 *db, enum command_types const type, char *second_arg)
+int run_cmd(sqlite3 *db, enum command_types const type,
+	    char const *const second_arg)
 {
 	if (type == NONE)
 		return 1;

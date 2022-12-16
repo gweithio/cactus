@@ -16,12 +16,12 @@ static int get_callback(void *data, int argc, char **argv, char **columnName)
 	return 0;
 }
 
-uint8_t note_insert(char *text, sqlite3 *db)
+uint8_t note_insert(char const *const text, sqlite3 *db)
 {
 	char *sql =
 		"INSERT INTO notes (note_text, note_created_at) VALUES ('%s', '%s')";
 
-	const char *time = time_now();
+	char const *const time = time_now();
 	char insert_string[256];
 	printf("Noted (%s) created @ %s\n", text, time);
 
@@ -66,7 +66,7 @@ uint8_t note_get(int id, sqlite3 *db)
 	return rec;
 }
 
-uint8_t note_update(int id, char *text, sqlite3 *db)
+uint8_t note_update(int id, char const *const text, sqlite3 *db)
 {
 	char update_string[256];
 	sprintf(update_string, "UPDATE notes SET text = '%s' WHERE id = %d",

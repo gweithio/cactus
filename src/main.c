@@ -9,7 +9,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-static enum command_types check_args(char *first)
+static enum command_types check_args(char const *const first)
 {
 	if (strcmp(first, "new") == 0) {
 		return CREATE;
@@ -31,7 +31,7 @@ static enum command_types check_args(char *first)
 	return 0;
 }
 
-static int create_empty_db(const char *name)
+static int create_empty_db(char const *const name)
 {
 	struct stat buffer;
 	char text_buffer[256];

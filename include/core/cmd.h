@@ -10,6 +10,7 @@ enum command_types { CREATE, DELETE, GET, GET_ALL, DELETE_ALL, REFRESH, NONE };
  *  an runs the correct function
  */
 
-int run_cmd(sqlite3 *db, enum command_types const type, char *second_arg);
+int run_cmd(sqlite3 *db, enum command_types const type,
+	    char const *const second_arg);
 
 #endif

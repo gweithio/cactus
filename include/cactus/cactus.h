@@ -11,7 +11,7 @@
  * @param text - the note text we want to insert
  * @param db - the db instance we're inserting to
  * @returns success */
-uint8_t note_insert(char *text, sqlite3 *db);
+uint8_t note_insert(char const *const text, sqlite3 *db);
 
 /*
  * Deletes a note from the db instance, using the id
@@ -43,7 +43,7 @@ uint8_t note_get(int id, sqlite3 *db);
  * @param text - the text we are replacing it with
  * @param db - the database instance we want to update
  * @returns success (0) or failure (1) */
-uint8_t note_update(int id, char *text, sqlite3 *db);
+uint8_t note_update(int id, char const *const text, sqlite3 *db);
 
 /*
  * get all notes in the db instance
