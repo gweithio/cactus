@@ -9,7 +9,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-static enum command_types check_args(char const *const first)
+static enum command_types check_args(char const *first)
 {
 	if (strcmp(first, "new") == 0) {
 		return CREATE;
@@ -23,7 +23,6 @@ static enum command_types check_args(char const *const first)
 		return DELETE_ALL;
 	} else if (strcmp(first, "refresh") == 0) {
 		return REFRESH;
-
 	} else {
 		return NONE;
 	}
@@ -31,7 +30,7 @@ static enum command_types check_args(char const *const first)
 	return 0;
 }
 
-static int create_empty_db(char const *const name)
+static int create_empty_db(char const *name)
 {
 	struct stat buffer;
 	char text_buffer[256];
@@ -70,6 +69,7 @@ static void create_base_table(sqlite3 *db)
 int main(int argc, char **argv)
 {
 	sqlite3 *db;
+	struct failure_report report;
 
 	if (argc < 2) {
 		printf("Usage: %s new 'Note Text!'\n", argv[0]);
@@ -90,15 +90,14 @@ int main(int argc, char **argv)
 
 	create_base_table(db);
 
+	if (run_cmd(db, report, check_args(argv[1]), argv[2]) != SQLITE_OK) {
+		log_error("Reason: %s\nSQL Reason: %s\n", report.reason,
+			  report.sqlReason);
+		log_error("Failed to run command: %s", sqlite3_errmsg(db));
+	}
+
 	if (sqlite3_close(db) != SQLITE_OK) {
 		log_error("Could not close database: %s", sqlite3_errmsg(db));
 		return 0;
-	}
-
-	if (run_cmd(db, check_args(argv[1]), argv[2]) != SQLITE_OK) {
-		log_error("Failed to run command: %s", sqlite3_errmsg(db));
-		return 0;
-	} else {
-		return 1;
 	}
 }

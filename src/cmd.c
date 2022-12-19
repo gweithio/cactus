@@ -4,30 +4,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int run_cmd(sqlite3 *db, enum command_types const type,
-	    char const *const second_arg)
+int run_cmd(sqlite3 *db, struct failure_report report,
+	    enum command_types const type, char const *second_arg)
 {
 	if (type == NONE)
 		return 1;
 
 	switch (type) {
 	case CREATE:
-		return note_insert(second_arg, db);
+		note_insert(second_arg, db, report);
 		break;
 	case DELETE:
-		return note_delete(atoi(second_arg), db);
+		note_delete(atoi(second_arg), db, report);
 		break;
 	case DELETE_ALL:
-		return note_delete_all(db);
+		note_delete_all(db, report);
 		break;
 	case GET:
-		return note_get(atoi(second_arg), db);
+		note_get(atoi(second_arg), db, report);
 		break;
 	case GET_ALL:
-		return note_get_all(db);
+		note_get_all(db, report);
 		break;
 	case REFRESH:
-		return note_refresh(db);
+		note_refresh(db);
 		break;
 	default:
 		return 1;

@@ -11,16 +11,17 @@
 char *time_now()
 {
 	time_t timer;
-	char buffer[26];
+	char buffer[256];
 	struct tm *tm_info;
-	char *final;
+	char *final = malloc(sizeof(char *));
 
 	timer = time(NULL);
 	tm_info = localtime(&timer);
 
-	strftime(buffer, 26, "%Y-%m-%d", tm_info);
+	strftime(buffer, sizeof(buffer), "%Y-%m-%d", tm_info);
 
-	memmove(final, buffer, strlen(buffer) + strlen(final));
+	size_t buffer_len = strlen(buffer);
+	memmove(final, buffer, buffer_len + 1);
 
 	return final;
 }

@@ -16,83 +16,106 @@ static int get_callback(void *data, int argc, char **argv, char **columnName)
 	return 0;
 }
 
-uint8_t note_insert(char const *const text, sqlite3 *db)
+void note_insert(char const *const text, sqlite3 *db,
+		 struct failure_report report)
 {
 	char *sql =
 		"INSERT INTO notes (note_text, note_created_at) VALUES ('%s', '%s')";
 
-	char const *const time = time_now();
+	char *const time = time_now();
 	char insert_string[256];
+	char *errorMsg = 0;
 	printf("Noted (%s) created @ %s\n", text, time);
 
 	sprintf(insert_string, sql, text, time);
 
-	printf("SQL: %s\n", insert_string);
+	// NOTE(ethan): This is the big thats failing
+	uint8_t result = sqlite3_exec(db, insert_string, NULL, NULL, &errorMsg);
 
-	return sqlite3_exec(db, insert_string, NULL, NULL, NULL);
-}
-
-uint8_t note_delete(int id, sqlite3 *db)
-{
-	char delete_string[256];
-	sprintf(delete_string, "DELETE FROM notes WHERE id = %d", id);
-
-	return sqlite3_exec(db, delete_string, NULL, NULL, NULL);
-}
-
-uint8_t note_delete_all(sqlite3 *db)
-{
-	char delete_all_string[256];
-
-	sprintf(delete_all_string, "DELETE FROM notes");
-
-	return sqlite3_exec(db, delete_all_string, NULL, NULL, NULL);
-}
-
-uint8_t note_get(int id, sqlite3 *db)
-{
-	char get_string[256];
-	char *errorMesg = 0;
-	sprintf(get_string, "SELECT * FROM notes WHERE id = %d", id);
-
-	uint8_t rec = (uint8_t)sqlite3_exec(db, get_string, get_callback, NULL,
-					    &errorMesg);
-
-	if (rec != SQLITE_OK) {
-		fprintf(stderr, "Error: %s\n", errorMesg);
-		sqlite3_free(errorMesg);
+	if (result != SQLITE_OK) {
+		sprintf(report.reason, "Failed to insert string\n");
+		report.sqlReason = errorMsg;
 	}
 
-	return rec;
+	free(time);
 }
 
-uint8_t note_update(int id, char const *const text, sqlite3 *db)
+void note_delete(int id, sqlite3 *db, struct failure_report report)
+{
+	char delete_string[256];
+	char *errorMsg = 0;
+	sprintf(delete_string, "DELETE FROM notes WHERE id = %d", id);
+
+	uint8_t result = sqlite3_exec(db, delete_string, NULL, NULL, &errorMsg);
+
+	if (result != SQLITE_OK) {
+		sprintf(report.reason, "Failed to delete note: %d\n", id);
+		report.sqlReason = errorMsg;
+	}
+}
+
+void note_delete_all(sqlite3 *db, struct failure_report report)
+{
+	char delete_all_string[256];
+	char *errorMsg = 0;
+
+	sprintf(delete_all_string, "DELETE FROM notes");
+	uint8_t result =
+		sqlite3_exec(db, delete_all_string, NULL, NULL, &errorMsg);
+
+	if (result != SQLITE_OK) {
+		sprintf(report.reason, "Failed to delete all notes\n");
+		report.sqlReason = errorMsg;
+	}
+}
+
+void note_get(int id, sqlite3 *db, struct failure_report report)
+{
+	char get_string[256];
+	char *errorMsg = 0;
+	sprintf(get_string, "SELECT * FROM notes WHERE id = %d", id);
+
+	uint8_t result =
+		sqlite3_exec(db, get_string, get_callback, NULL, &errorMsg);
+
+	if (result != SQLITE_OK) {
+		sprintf(report.reason, "Failed to get note: %d\n", id);
+		report.sqlReason = errorMsg;
+	}
+}
+
+void note_update(int id, char const *const text, sqlite3 *db,
+		 struct failure_report report)
 {
 	char update_string[256];
+	char *errorMsg = 0;
 	sprintf(update_string, "UPDATE notes SET text = '%s' WHERE id = %d",
 		text, id);
-	return sqlite3_exec(db, update_string, NULL, NULL, NULL);
+	uint8_t result = sqlite3_exec(db, update_string, NULL, NULL, &errorMsg);
+
+	if (result != SQLITE_OK) {
+		sprintf(report.reason, "Error: %s\n", errorMsg);
+		report.sqlReason = errorMsg;
+	}
 }
 
-uint8_t note_get_all(sqlite3 *db)
+void note_get_all(sqlite3 *db, struct failure_report report)
 {
 	char get_all_string[256];
-	char *errorMesg = 0;
+	char *errorMsg = 0;
 
 	sprintf(get_all_string, "SELECT * FROM notes");
 
-	uint8_t rc = sqlite3_exec(db, get_all_string, get_callback, NULL,
-				  &errorMesg);
+	uint8_t result =
+		sqlite3_exec(db, get_all_string, get_callback, NULL, &errorMsg);
 
-	if (rc != SQLITE_OK) {
-		fprintf(stderr, "Failed to get all rows\n");
-		sqlite3_free(errorMesg);
+	if (result != SQLITE_OK) {
+		sprintf(report.reason, "Failued to get all rows\n");
+		report.sqlReason = errorMsg;
 	}
-
-	return rc;
 }
 
-uint8_t note_refresh(sqlite3 *db)
+void note_refresh(sqlite3 *db)
 {
-	return remove("notes.db");
+	remove("notes.db");
 }
